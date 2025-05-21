@@ -5,8 +5,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aurora | Team 8 | Witness the Magic</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        /* Loader Styles */
+        #loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            /* Ensure it's on top of everything */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            /* Important for curtain effect */
+            background-color: var(--bg-dark);
+            /* Match your site's dark background */
+        }
+
+        .loader-curtain {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            /* Each curtain half takes 50% */
+            height: 100%;
+            background-color: var(--bg-card);
+            /* Or a slightly different shade for visibility */
+            transition: transform 1.2s cubic-bezier(0.86, 0, 0.07, 1);
+            /* Smooth curtain animation */
+            z-index: 2;
+            /* Curtains above loader content initially */
+        }
+
+        #loader-curtain-left {
+            left: 0;
+            transform-origin: left center;
+        }
+
+        #loader-curtain-right {
+            right: 0;
+            transform-origin: right center;
+        }
+
+        /* When body gets 'loaded' class, curtains open */
+        body.loaded #loader-curtain-left {
+            transform: translateX(-100%);
+            /* Slide left curtain out */
+        }
+
+        body.loaded #loader-curtain-right {
+            transform: translateX(100%);
+            /* Slide right curtain out */
+        }
+
+        /* Styles for the content inside the loader (logo, spinner, text) */
+        .loader-content {
+            position: relative;
+            z-index: 1;
+            /* Content behind curtains until they open a bit or fully transparent */
+            text-align: center;
+            color: var(--text-primary);
+            opacity: 1;
+            /* Initially visible */
+            transition: opacity 0.5s ease-out 0.8s;
+            /* Fade out after curtains start opening */
+        }
+
+        body.loaded .loader-content {
+            opacity: 0;
+            /* Fade out content as curtains open */
+            pointer-events: none;
+            /* Prevent interaction after hiding */
+        }
+
+
+        .loader-logo {
+            width: 100px;
+            /* Adjust size as needed */
+            height: auto;
+            margin-bottom: 20px;
+            animation: pulse-logo 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-logo {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+
+
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--primary-blue);
+            /* Your primary color */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        /* Keyframes for spin animation (you might already have this) */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-text {
+            font-size: 1.2em;
+            letter-spacing: 1px;
+        }
+
+        /* Hide scrollbar while loader is active */
+        body:not(.loaded) {
+            overflow-y: hidden;
+        }
 
         :root {
             --primary-blue: #4263EB;
@@ -1558,6 +1688,17 @@
 </head>
 
 <body>
+
+    <div id="loader-wrapper">
+        <div id="loader-curtain-left" class="loader-curtain"></div>
+        <div id="loader-curtain-right" class="loader-curtain"></div>
+        <div class="loader-content">
+            <img src="logo.png" alt="Loading Aurora..." class="loader-logo"> <!-- Your logo -->
+            <div class="loader-spinner"></div>
+            <p class="loader-text">Witness the Magic...</p>
+        </div>
+    </div>
+
     <!-- Banner -->
     <div class="banner">
         <div class="container">
@@ -2677,8 +2818,8 @@
         updateCountdown();
         setInterval(updateCountdown, 60000); // Update every minute
 
-        
-        
+
+
 
 
         // Dynamic news functionality
@@ -2773,144 +2914,245 @@
         document.getElementById('refresh-news').addEventListener('click', refreshNews);
     </script>
     <script>
-                // --- Dynamic Quotes Functionality - NEW SCRIPT ---
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const quotes = [
-                            {
-                                text: "The future belongs to those who believe in the beauty of their dreams.",
-                                author: "Eleanor Roosevelt",
-                                image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
-                            },
-                            {
-                                text: "Success is not final, failure is not fatal: It is the courage to continue that counts.",
-                                author: "Winston Churchill",
-                                image: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto.format&fit=crop&w=1374&q=80"
-                            },
-                            {
-                                text: "The only way to do great work is to love what you do.",
-                                author: "Steve Jobs",
-                                image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto.format&fit=crop&w=1470&q=80"
-                            },
-                            {
-                                text: "Your time is limited, don't waste it living someone else's life.",
-                                author: "Steve Jobs",
-                                image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto.format&fit=crop&w=1470&q=80"
-                            },
-                            {
-                                text: "Education is the most powerful weapon which you can use to change the world.",
-                                author: "Nelson Mandela",
-                                image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto.format&fit=crop&w=1470&q=80"
+        // --- Dynamic Quotes Functionality - NEW SCRIPT ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const quotes = [
+                {
+                    text: "The future belongs to those who believe in the beauty of their dreams.",
+                    author: "Eleanor Roosevelt",
+                    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
+                },
+                {
+                    text: "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+                    author: "Winston Churchill",
+                    image: "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto.format&fit=crop&w=1374&q=80"
+                },
+                {
+                    text: "The only way to do great work is to love what you do.",
+                    author: "Steve Jobs",
+                    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto.format&fit=crop&w=1470&q=80"
+                },
+                {
+                    text: "Your time is limited, don't waste it living someone else's life.",
+                    author: "Steve Jobs",
+                    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto.format&fit=crop&w=1470&q=80"
+                },
+                {
+                    text: "Education is the most powerful weapon which you can use to change the world.",
+                    author: "Nelson Mandela",
+                    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto.format&fit=crop&w=1470&q=80"
+                }
+            ];
+
+            let currentQuoteIndex = 0;
+            const quoteTextEl = document.getElementById('quote-text');
+            const quoteAuthorEl = document.getElementById('quote-author');
+            const quoteImageEl = document.getElementById('quote-image');
+            const thoughtContentWrapperEl = document.querySelector("#thoughtContainer .thought-content");
+            const nextButton = document.getElementById('next-quote');
+            const prevButton = document.getElementById('prev-quote');
+            const thoughtContainerEl = document.getElementById('thoughtContainer');
+
+            let autoPlayInterval;
+            const autoPlayDelay = 10000; // 10 seconds
+
+            function setQuoteContent(index) {
+                if (!quoteTextEl || !quoteAuthorEl || !quoteImageEl) return;
+                const quote = quotes[index];
+                quoteTextEl.textContent = quote.text;
+                quoteAuthorEl.textContent = "- " + quote.author;
+                quoteImageEl.src = quote.image; // Set image src directly
+            }
+
+            function animateQuoteChange(newIndex, direction) {
+                if (!thoughtContentWrapperEl || !quoteImageEl) {
+                    console.error("Quote slider: Missing animation target elements.");
+                    setQuoteContent(newIndex); // Fallback to direct content change
+                    return;
+                }
+
+                const slideXAmount = (direction === 'next') ? -20 : 20;
+                const timeline = gsap.timeline();
+
+                timeline
+                    .to(thoughtContentWrapperEl, { opacity: 0, x: slideXAmount, duration: 0.35, ease: "power2.inOut" })
+                    .to(quoteImageEl, { opacity: 0, duration: 0.3, ease: "power2.inOut" }, "-=0.25") // Animate image out slightly after/with text
+                    .call(() => { // This function will be called after the out-animations complete
+                        setQuoteContent(newIndex); // Update text and image src
+                        currentQuoteIndex = newIndex; // Update the global index
+                        console.log("Quote changed to index:", currentQuoteIndex);
+                    })
+                    .set(thoughtContentWrapperEl, { x: -slideXAmount }) // Reset x position for slide-in from other side
+                    .to(quoteImageEl, { opacity: 1, duration: 0.35, ease: "power2.inOut" })
+                    .to(thoughtContentWrapperEl, { opacity: 1, x: 0, duration: 0.4, ease: "power2.inOut" }, "-=0.25"); // Animate text in
+            }
+
+
+            function showNextQuote() {
+                console.log("Attempting to show next quote. Current index:", currentQuoteIndex);
+                let newIndex = (currentQuoteIndex + 1) % quotes.length;
+                animateQuoteChange(newIndex, 'next');
+            }
+
+            function showPrevQuote() {
+                console.log("Attempting to show previous quote. Current index:", currentQuoteIndex);
+                let newIndex = (currentQuoteIndex - 1 + quotes.length) % quotes.length;
+                animateQuoteChange(newIndex, 'prev');
+            }
+
+            function startAutoPlay() {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = setInterval(showNextQuote, autoPlayDelay);
+                console.log("Quote autoplay started. Interval ID:", autoPlayInterval);
+            }
+
+            function stopAutoPlay() {
+                clearInterval(autoPlayInterval);
+                console.log("Quote autoplay paused/stopped.");
+            }
+
+            // --- Initialization ---
+            if (!quoteTextEl || !quoteAuthorEl || !quoteImageEl || !nextButton || !prevButton || !thoughtContainerEl || !thoughtContentWrapperEl) {
+                console.error("Quote Slider: One or more required HTML elements are missing. Aborting initialization.");
+                return; // Stop if essential elements are not found
+            }
+
+            // Set initial quote without animation (it will appear when #thoughtContainer animates in)
+            setQuoteContent(currentQuoteIndex);
+            console.log("Initial quote set (index " + currentQuoteIndex + ")");
+
+            // Event Listeners for buttons
+            nextButton.addEventListener('click', () => {
+                console.log("Next quote button clicked by user.");
+                stopAutoPlay(); // Stop current interval
+                showNextQuote();
+                startAutoPlay(); // Restart interval
+            });
+
+            prevButton.addEventListener('click', () => {
+                console.log("Previous quote button clicked by user.");
+                stopAutoPlay();
+                showPrevQuote();
+                startAutoPlay();
+            });
+
+            // Pause autoplay on hover
+            thoughtContainerEl.addEventListener('mouseenter', () => {
+                console.log("Mouse entered thought container: Pausing autoplay.");
+                stopAutoPlay();
+            });
+            thoughtContainerEl.addEventListener('mouseleave', () => {
+                console.log("Mouse left thought container: Resuming autoplay.");
+                startAutoPlay();
+            });
+
+            // Start autoplay
+            startAutoPlay();
+
+            console.log("Quote slider script fully initialized.");
+        });
+        // --- END Dynamic Quotes Functionality ---
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+                const heroVideo = document.querySelector('.hero-background-video');
+                const loaderWrapper = document.getElementById('loader-wrapper');
+                const body = document.body;
+
+                console.log("Loader Script: Initializing.");
+
+                if (heroVideo && loaderWrapper) {
+                    console.log("Loader Script: Hero video and loader wrapper found.");
+
+                    // Function to remove the loader
+                    function removeLoader() {
+                        console.log("Loader Script: Removing loader.");
+                        body.classList.add('loaded'); // Triggers curtain animation and content fade
+
+                        // After the curtain animation is complete, hide the loader wrapper entirely
+                        // The transition duration for curtains is 1.2s
+                        setTimeout(() => {
+                            if (loaderWrapper) { // Check again in case it was removed by other means
+                                loaderWrapper.style.display = 'none';
+                                console.log("Loader Script: Loader wrapper display set to none.");
                             }
-                        ];
+                        }, 1300); // A bit longer than the curtain animation (1.2s)
+                    }
 
-                        let currentQuoteIndex = 0;
-                        const quoteTextEl = document.getElementById('quote-text');
-                        const quoteAuthorEl = document.getElementById('quote-author');
-                        const quoteImageEl = document.getElementById('quote-image');
-                        const thoughtContentWrapperEl = document.querySelector("#thoughtContainer .thought-content");
-                        const nextButton = document.getElementById('next-quote');
-                        const prevButton = document.getElementById('prev-quote');
-                        const thoughtContainerEl = document.getElementById('thoughtContainer');
+                    // Check if the video has metadata loaded (canplay) and is playing
+                    let videoReady = false;
+                    let videoPlaying = false;
 
-                        let autoPlayInterval;
-                        const autoPlayDelay = 10000; // 10 seconds
-
-                        function setQuoteContent(index) {
-                            if (!quoteTextEl || !quoteAuthorEl || !quoteImageEl) return;
-                            const quote = quotes[index];
-                            quoteTextEl.textContent = quote.text;
-                            quoteAuthorEl.textContent = "- " + quote.author;
-                            quoteImageEl.src = quote.image; // Set image src directly
+                    function checkVideoStatusAndRemoveLoader() {
+                        if (videoReady && videoPlaying) {
+                            console.log("Loader Script: Video is ready and playing. Proceeding to remove loader.");
+                            removeLoader();
+                            // Remove event listeners once the loader is triggered to be removed
+                            heroVideo.removeEventListener('canplay', onCanPlay);
+                            heroVideo.removeEventListener('playing', onPlaying);
+                        } else {
+                            console.log(`Loader Script: Video status - Ready: ${videoReady}, Playing: ${videoPlaying}`);
                         }
+                    }
 
-                        function animateQuoteChange(newIndex, direction) {
-                            if (!thoughtContentWrapperEl || !quoteImageEl) {
-                                console.error("Quote slider: Missing animation target elements.");
-                                setQuoteContent(newIndex); // Fallback to direct content change
-                                return;
-                            }
-
-                            const slideXAmount = (direction === 'next') ? -20 : 20;
-                            const timeline = gsap.timeline();
-
-                            timeline
-                                .to(thoughtContentWrapperEl, { opacity: 0, x: slideXAmount, duration: 0.35, ease: "power2.inOut" })
-                                .to(quoteImageEl, { opacity: 0, duration: 0.3, ease: "power2.inOut" }, "-=0.25") // Animate image out slightly after/with text
-                                .call(() => { // This function will be called after the out-animations complete
-                                    setQuoteContent(newIndex); // Update text and image src
-                                    currentQuoteIndex = newIndex; // Update the global index
-                                    console.log("Quote changed to index:", currentQuoteIndex);
-                                })
-                                .set(thoughtContentWrapperEl, { x: -slideXAmount }) // Reset x position for slide-in from other side
-                                .to(quoteImageEl, { opacity: 1, duration: 0.35, ease: "power2.inOut" })
-                                .to(thoughtContentWrapperEl, { opacity: 1, x: 0, duration: 0.4, ease: "power2.inOut" }, "-=0.25"); // Animate text in
-                        }
-
-
-                        function showNextQuote() {
-                            console.log("Attempting to show next quote. Current index:", currentQuoteIndex);
-                            let newIndex = (currentQuoteIndex + 1) % quotes.length;
-                            animateQuoteChange(newIndex, 'next');
-                        }
-
-                        function showPrevQuote() {
-                            console.log("Attempting to show previous quote. Current index:", currentQuoteIndex);
-                            let newIndex = (currentQuoteIndex - 1 + quotes.length) % quotes.length;
-                            animateQuoteChange(newIndex, 'prev');
-                        }
-
-                        function startAutoPlay() {
-                            clearInterval(autoPlayInterval);
-                            autoPlayInterval = setInterval(showNextQuote, autoPlayDelay);
-                            console.log("Quote autoplay started. Interval ID:", autoPlayInterval);
-                        }
-
-                        function stopAutoPlay() {
-                            clearInterval(autoPlayInterval);
-                            console.log("Quote autoplay paused/stopped.");
-                        }
-
-                        // --- Initialization ---
-                        if (!quoteTextEl || !quoteAuthorEl || !quoteImageEl || !nextButton || !prevButton || !thoughtContainerEl || !thoughtContentWrapperEl) {
-                            console.error("Quote Slider: One or more required HTML elements are missing. Aborting initialization.");
-                            return; // Stop if essential elements are not found
-                        }
-
-                        // Set initial quote without animation (it will appear when #thoughtContainer animates in)
-                        setQuoteContent(currentQuoteIndex);
-                        console.log("Initial quote set (index " + currentQuoteIndex + ")");
-
-                        // Event Listeners for buttons
-                        nextButton.addEventListener('click', () => {
-                            console.log("Next quote button clicked by user.");
-                            stopAutoPlay(); // Stop current interval
-                            showNextQuote();
-                            startAutoPlay(); // Restart interval
+                    function onCanPlay() {
+                        console.log("Loader Script: Video 'canplay' event fired.");
+                        videoReady = true;
+                        heroVideo.play().then(() => {
+                            console.log("Loader Script: Video play() promise resolved.");
+                        }).catch(error => {
+                            console.error("Loader Script: Video play() promise rejected:", error);
+                            // If autoplay fails (e.g., due to browser policy),
+                            // we might want to remove loader anyway or show a play button.
+                            // For now, let's assume it might start playing via other means or already is.
+                            // If it's already playing due to 'autoplay' attribute, the 'playing' event will handle it.
                         });
+                        checkVideoStatusAndRemoveLoader();
+                    }
 
-                        prevButton.addEventListener('click', () => {
-                            console.log("Previous quote button clicked by user.");
-                            stopAutoPlay();
-                            showPrevQuote();
-                            startAutoPlay();
-                        });
+                    function onPlaying() {
+                        console.log("Loader Script: Video 'playing' event fired.");
+                        videoPlaying = true;
+                        checkVideoStatusAndRemoveLoader();
+                    }
 
-                        // Pause autoplay on hover
-                        thoughtContainerEl.addEventListener('mouseenter', () => {
-                            console.log("Mouse entered thought container: Pausing autoplay.");
-                            stopAutoPlay();
-                        });
-                        thoughtContainerEl.addEventListener('mouseleave', () => {
-                            console.log("Mouse left thought container: Resuming autoplay.");
-                            startAutoPlay();
-                        });
+                    // Add event listeners
+                    // 'canplay' indicates the browser has enough data to begin playing.
+                    heroVideo.addEventListener('canplay', onCanPlay);
 
-                        // Start autoplay
-                        startAutoPlay();
+                    // 'playing' indicates playback has actually started.
+                    heroVideo.addEventListener('playing', onPlaying);
 
-                        console.log("Quote slider script fully initialized.");
-                    });
-                    // --- END Dynamic Quotes Functionality ---
+                    // Fallback: If the video is already playing or ready when the script runs
+                    // (e.g., cached or very fast load)
+                    if (heroVideo.readyState >= 3) { // HAVE_FUTURE_DATA or HAVE_ENOUGH_DATA
+                        console.log("Loader Script: Video already has data (readyState >= 3).");
+                        onCanPlay(); // Manually trigger to check if it can play
+                    }
+                    if (!heroVideo.paused) {
+                        console.log("Loader Script: Video is not paused (likely already playing).");
+                        onPlaying(); // Manually trigger if it's already playing
+                    }
+
+
+                    // Fallback timer: If video events don't fire for some reason, or it takes too long
+                    const maxLoadTime = 8000; // 8 seconds
+                    setTimeout(() => {
+                        if (!body.classList.contains('loaded')) {
+                            console.warn("Loader Script: Max load time reached. Forcing loader removal.");
+                            removeLoader();
+                        }
+                    }, maxLoadTime);
+
+                } else {
+                    console.error("Loader Script: Hero video or loader wrapper not found. Loader cannot be initialized.");
+                    // If elements aren't found, remove loader immediately or hide it to prevent blocking page
+                    if (loaderWrapper) loaderWrapper.style.display = 'none';
+                    body.classList.add('loaded'); // Allow page to function
+                }
+
+                // ... (Your other DOMContentLoaded scripts like FAQ, Quotes, News Refresh, Stats Counter)
+            });
     </script>
 </body>
 
